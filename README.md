@@ -2,7 +2,7 @@
 <div align="center">
   
 
-  # Valorant-Account-Checker-with-Capture
+  # Valorant Account Checker with Capture
   
 <h1>
 🌟 Join my Discord server <a href="https://discord.gg/x6UX9qufVR">here</a> 🌟
