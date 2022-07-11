@@ -390,7 +390,7 @@ class valorant:
             level = _json["account_level"]
             return region, level, headers
         else:
-            self.log(f"get_region()\nAccount: {self.current_combo}\nError: Unexpected response. {r.text} {r.status_code}")
+            self.log(f"get_region()\nAccount: {self.current_combo}\nError: Unexpected response. Will be ignored but for reference: {r.text} {r.status_code}")
             region = "na" #We will guess NA since it is the most popular region.
             return region, "Unknown", headers
     
