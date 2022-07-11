@@ -205,7 +205,13 @@ class valorant:
             self.update_title()
             self.failed_accounts.append(combo)
         elif "uri" in login.text:
-            uri = login.json()["response"]["parameters"]["uri"]
+            try:
+                uri = login.json()["response"]["parameters"]["uri"]
+            except Exception as e:
+                self.failed_accounts.append(combo)
+                self.log(f"check_account()\nAccount: {combo}\nError: {e}\nResponse: {r.text} {r.status_code}\nProxy: {proxy}\nEndpoint: PUT https://auth.riotgames.com/api/v1/authorization")
+                self.update_title()
+                return
             access_token = uri.split("access_token=")[1].split("&")[0]
             self.valid += 1
             self.checked += 1
@@ -262,6 +268,7 @@ class valorant:
     def update_skin_stats(self, skin_list, region, vp, rp, rank, level, country, email_verified, phone_verified, account_verified):
         skin_amount = len(skin_list) 
         skin_amount = int(skin_amount)
+        print(region)
         verified = "Yes"
         if account_verified == False:
             verified = "False, account is unverified"
@@ -297,31 +304,31 @@ class valorant:
                 f.write(account + "\n")
         elif skin_amount in range(20, 29):
             self._20_29 += 1
-            with open(f"Results/{self.dt_string}/{region}/20-29.txt", "a") as f:
+            with open(f"Results/{self.dt_string}/{region}/10-19.txt", "a") as f:
                 f.write(account + "\n")
         elif skin_amount in range(30, 39):
             self._30_39 += 1
-            with open(f"Results/{self.dt_string}/{region}/30-39.txt", "a") as f:
+            with open(f"Results/{self.dt_string}/{region}/10-19.txt", "a") as f:
                 f.write(account + "\n")
         elif skin_amount in range(40, 49):
             self._40_49 += 1
-            with open(f"Results/{self.dt_string}/{region}/40-49.txt", "a") as f:
+            with open(f"Results/{self.dt_string}/{region}/10-19.txt", "a") as f:
                 f.write(account + "\n")
         elif skin_amount in range(50, 59):
             self._50_59 += 1
-            with open(f"Results/{self.dt_string}/{region}/50-59.txt", "a") as f:
+            with open(f"Results/{self.dt_string}/{region}/10-19.txt", "a") as f:
                 f.write(account + "\n")
         elif skin_amount in range(60, 69):
             self._60_69 += 1
-            with open(f"Results/{self.dt_string}/{region}/60-69.txt", "a") as f:
+            with open(f"Results/{self.dt_string}/{region}/10-19.txt", "a") as f:
                 f.write(account + "\n")
         elif skin_amount in range(70, 79):
             self._70_79 += 1
-            with open(f"Results/{self.dt_string}/{region}/70-79.txt", "a") as f:
+            with open(f"Results/{self.dt_string}/{region}/10-19.txt", "a") as f:
                 f.write(account + "\n")
         elif skin_amount >= 80:
             self._80plus += 1
-            with open(f"Results/{self.dt_string}/{region}/80+.txt", "a") as f:
+            with open(f"Results/{self.dt_string}/{region}/10-19.txt", "a") as f:
                 f.write(account + "\n")
         self.update_title()
         
