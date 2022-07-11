@@ -1,4 +1,4 @@
-import email
+
 from colorama import Fore
 import ctypes, time, os, collections, requests
 from datetime import datetime
