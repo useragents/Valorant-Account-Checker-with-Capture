@@ -159,7 +159,7 @@ class valorant:
             return
         proxies = None
         if proxy != None:
-            proxies = {"https": f"https://{proxy}"}
+            proxies = {"https": f"http://{proxy}"}
         headers = {
             "Accept-Language": "en-US,en;q=0.9",
             "Accept": "application/json, text/plain, */*",
